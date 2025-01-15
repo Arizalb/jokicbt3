@@ -23,8 +23,7 @@ const questionSchema = new mongoose.Schema(
       {
         questionId: {
           type: Number,
-          unique: true,
-          default: 1,
+          unique: false, // Ubah menjadi false
         },
         question: {
           type: String,
@@ -81,10 +80,11 @@ questionSchema.pre("validate", function (next) {
 
 // Plugin Auto Increment untuk subdokumen
 questionSchema.plugin(AutoIncrement, {
-  inc_field: "questionId", // Field yang akan diincrement
-  id: "question_seq", // Nama sequence
+  inc_field: "questions.questionId",
+  id: "question_seq",
   start_seq: 1,
-  reference_fields: ["code"], // Gunakan ini untuk membuat sequence per kode
+  reference_fields: ["code"],
+  disable_hooks: true, // Tambahkan ini untuk menonaktifkan hooks default
 });
 
 module.exports = mongoose.model("Question", questionSchema);
