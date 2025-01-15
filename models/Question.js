@@ -79,10 +79,12 @@ questionSchema.pre("validate", function (next) {
   next();
 });
 
-// Plugin Auto Increment for the subdocument field
+// Plugin Auto Increment untuk subdokumen
 questionSchema.plugin(AutoIncrement, {
-  inc_field: "questions.questionId",
+  inc_field: "questionId", // Field yang akan diincrement
+  id: "question_seq", // Nama sequence
   start_seq: 1,
+  reference_fields: ["code"], // Gunakan ini untuk membuat sequence per kode
 });
 
 module.exports = mongoose.model("Question", questionSchema);
