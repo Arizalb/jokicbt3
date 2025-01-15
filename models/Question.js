@@ -71,13 +71,11 @@ const questionSchema = new mongoose.Schema(
   }
 );
 
-// Middleware untuk menghasilkan questionId unik
-questionSchema.pre("save", function (next) {
-  const doc = this;
-  if (doc.isNew && doc.questions && doc.questions.length > 0) {
-    let questionCounter = 1;
-    doc.questions.forEach((question) => {
-      question.questionId = questionCounter++;
+// Middleware untuk menghasilkan questionId unik sebelum validasi
+questionSchema.pre("validate", function (next) {
+  if (this.questions && this.questions.length > 0) {
+    this.questions.forEach((question, index) => {
+      question.questionId = index + 1;
     });
   }
   next();
