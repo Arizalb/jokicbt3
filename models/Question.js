@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const questionSchema = new mongoose.Schema(
   {
@@ -23,6 +22,7 @@ const questionSchema = new mongoose.Schema(
       {
         questionId: {
           type: Number,
+          unique: false, // Ubah menjadi false
         },
         question: {
           type: String,
@@ -71,16 +71,16 @@ const questionSchema = new mongoose.Schema(
   }
 );
 
-// Validasi untuk memastikan pilihan jawaban valid per soal
-questionSchema.pre("validate", function (next) {
-  // Hapus validasi duplikasi opsi
+// Middleware untuk menghasilkan questionId unik
+questionSchema.pre("save", function (next) {
+  const doc = this;
+  if (doc.isNew && doc.questions && doc.questions.length > 0) {
+    let questionCounter = 1;
+    doc.questions.forEach((question) => {
+      question.questionId = questionCounter++;
+    });
+  }
   next();
-});
-
-// Plugin Auto Increment for the subdocument field
-questionSchema.plugin(AutoIncrement, {
-  inc_field: "questions.questionId",
-  start_seq: 1,
 });
 
 module.exports = mongoose.model("Question", questionSchema);
